@@ -12,6 +12,14 @@ permissions:
 jobs:
   windows-release-check:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin:
+          - clef
+    defaults:
+      run:
+        working-directory: plugins/${{ matrix.plugin }}
 
     steps:
       - name: Check out the repository
@@ -22,6 +30,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: plugins/${{ matrix.plugin }}/package-lock.json
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v6

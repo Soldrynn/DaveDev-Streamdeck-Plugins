@@ -18,7 +18,7 @@ const publicReadme = await read("README.md");
 const license = await read("LICENSE");
 const notices = await read("THIRD_PARTY_NOTICES.md");
 const helper = await stat(join(root, "com.davedev.clef.sdPlugin", "helper", "ClefBridge.exe"));
-const repositoryUrl = "https://github.com/Soldrynn/StreamDeck-Clef";
+const repositoryUrl = "https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins";
 
 assert.equal(packageJson.license, "Apache-2.0", "package license");
 assert.equal(packageJson.repository?.url, `git+${repositoryUrl}.git`, "package repository URL");

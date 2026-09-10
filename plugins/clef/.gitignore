@@ -1,0 +1,16 @@
+node_modules/
+.tools/
+dist/
+logs/
+com.davedev.clef.sdPlugin/bin/
+com.davedev.clef.sdPlugin/helper/
+com.davedev.clef.sdPlugin/LICENSE
+com.davedev.clef.sdPlugin/NOTICE
+com.davedev.clef.sdPlugin/THIRD_PARTY_NOTICES.md
+helper/**/bin/
+helper/**/obj/
+*.log
+
+# Gallery render scratch
+branding/work/out/
+branding/work/pkg/
