@@ -1,0 +1,111 @@
+name: Release
+
+# Push a tag named <plugin>-v<version>, for example fivedeck-v0.1.0.0, to build that plugin on a
+# clean runner, attach the installer and its SHA-256 checksum to a draft release, and record a
+# signed build-provenance attestation. Verify a download with:
+#   gh attestation verify <file>.streamDeckPlugin --repo Soldrynn/DaveDev-Streamdeck-Plugins
+
+on:
+  push:
+    tags:
+      - "*-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Resolve the plugin from the tag
+        id: tag
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if ($env:TAG -notmatch '^(?<plugin>[a-z0-9-]+)-v(?<version>\d+\.\d+\.\d+\.\d+)$') { throw "Tag $env:TAG must look like <plugin>-v<major.minor.patch.build>." }
+          $plugin = $Matches.plugin
+          $version = $Matches.version
+          if (-not (Test-Path "plugins/$plugin/package.json")) { throw "No plugin named $plugin." }
+          $manifest = Get-ChildItem "plugins/$plugin" -Filter manifest.json -Recurse -Depth 1 | Select-Object -First 1
+          $declared = (Get-Content $manifest.FullName -Raw | ConvertFrom-Json).Version
+          if ($declared -ne $version) { throw "Tag version $version does not match manifest version $declared." }
+          "plugin=$plugin" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: plugins/${{ steps.tag.outputs.plugin }}/package-lock.json
+
+      - name: Set up .NET
+        if: steps.tag.outputs.plugin == 'clef'
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install dependencies
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}
+        run: npm ci
+
+      - name: Verify registry signatures
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}
+        run: npm audit signatures
+
+      - name: Build the plugin
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}
+        run: npm run build
+
+      - name: Run checks
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}
+        run: npm run check
+
+      - name: Validate the Stream Deck package
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}
+        run: npm run validate
+
+      - name: Package the plugin
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}
+        run: npm run pack
+
+      - name: Write checksums
+        id: files
+        shell: pwsh
+        working-directory: plugins/${{ steps.tag.outputs.plugin }}/dist
+        env:
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+        run: |
+          $files = Get-ChildItem -Filter *.streamDeckPlugin
+          if ($files.Count -ne 1) { throw "Expected one installer, found $($files.Count)." }
+          $hash = (Get-FileHash $files[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $($files[0].Name)" | Out-File -Encoding ascii SHA256SUMS.txt
+          "installer=plugins/$env:PLUGIN/dist/$($files[0].Name)" >> $env:GITHUB_OUTPUT
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ steps.files.outputs.installer }}
+
+      - name: Create a draft release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+          INSTALLER: ${{ steps.files.outputs.installer }}
+        run: |
+          gh release create $env:TAG $env:INSTALLER "plugins/$env:PLUGIN/dist/SHA256SUMS.txt" `
+            --draft --verify-tag --title $env:TAG `
+            --notes "Built by GitHub Actions from $env:GITHUB_SHA. Verify with: gh attestation verify <installer> --repo $env:GITHUB_REPOSITORY"

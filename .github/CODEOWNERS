@@ -1,0 +1,6 @@
+# Every change needs review from the maintainer. Workflows and release tooling are listed on their
+# own so a future co-maintainer can be added to plugin code without gaining release control.
+*                   @Soldrynn
+/.github/           @Soldrynn
+/SECURITY.md        @Soldrynn
+/plugins/*/scripts/ @Soldrynn

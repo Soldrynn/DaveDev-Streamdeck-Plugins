@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Server Command settings</title>
+  <link rel="stylesheet" href="fivedeck.css">
+  <script src="sdpi-components.js"></script>
+</head>
+<body>
+<sdpi-item label="Server">
+    <sdpi-select setting="slot" default="s1">
+      <option value="s1">Server 1</option>
+      <option value="s2">Server 2</option>
+      <option value="s3">Server 3</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Command">
+    <sdpi-select setting="preset" default="ensure">
+      <option value="ensure">Restart resource (ensure)</option>
+      <option value="refresh-ensure">Refresh, then restart resource</option>
+      <option value="restart">Restart resource (restart)</option>
+      <option value="stop">Stop resource</option>
+      <option value="refresh">Refresh resource list</option>
+      <option value="custom">Custom commands…</option>
+    </sdpi-select>
+  </sdpi-item>
+  <div data-when="preset" data-is="ensure,refresh-ensure,restart,stop" data-default="ensure">
+  <sdpi-item label="Resource">
+    <sdpi-textfield setting="resource" placeholder="my-resource"></sdpi-textfield>
+  </sdpi-item>
+  </div>
+  <div data-when="preset" data-is="custom" data-default="ensure">
+  <sdpi-item label="Commands">
+    <sdpi-textarea setting="custom" rows="4" placeholder="say Restarting in 5 minutes
+status"></sdpi-textarea>
+  </sdpi-item>
+  </div>
+  <sdpi-item label="Caption">
+    <sdpi-checkbox setting="caption" label="Show the resource on the key" default="true"></sdpi-checkbox>
+  </sdpi-item>
+  <sdpi-item>
+    <small class="fd-note">Commands go straight into the console of a hidden server FiveDeck started. Otherwise FiveDeck uses RCON: set <code>rcon_password</code> in server.cfg. RCON is unencrypted, so use it only on this PC or your LAN. The password is saved in FiveDeck's global settings and is never exported with a profile.</small>
+  </sdpi-item>
+  <div data-when="slot" data-is="s1" data-default="s1">
+  <div class="fd-heading">Server 1 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s1.name" placeholder="Server 1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s1.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s1.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="RCON password">
+    <sdpi-password setting="servers.s1.password" global></sdpi-password>
+  </sdpi-item>
+  </div>
+  <div data-when="slot" data-is="s2" data-default="s1">
+  <div class="fd-heading">Server 2 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s2.name" placeholder="Server 2" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s2.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s2.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="RCON password">
+    <sdpi-password setting="servers.s2.password" global></sdpi-password>
+  </sdpi-item>
+  </div>
+  <div data-when="slot" data-is="s3" data-default="s1">
+  <div class="fd-heading">Server 3 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s3.name" placeholder="Server 3" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s3.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s3.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="RCON password">
+    <sdpi-password setting="servers.s3.password" global></sdpi-password>
+  </sdpi-item>
+  </div>
+  <script src="fivedeck.js"></script>
+</body>
+</html>

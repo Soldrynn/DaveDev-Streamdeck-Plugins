@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Command Dial settings</title>
+  <link rel="stylesheet" href="fivedeck.css">
+  <script src="sdpi-components.js"></script>
+</head>
+<body>
+<sdpi-item label="Label">
+    <sdpi-textfield setting="label" placeholder="Emotes"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Mode">
+    <sdpi-select setting="mode" default="list">
+      <option value="list">List of commands</option>
+      <option value="range">Number range</option>
+    </sdpi-select>
+  </sdpi-item>
+  <div data-when="mode" data-is="list" data-default="list">
+  <sdpi-item label="Commands">
+    <sdpi-textarea setting="items" rows="6" placeholder="Dance = e dance
+Wave = e wave
+Sit = e sit
+Cancel = e c"></sdpi-textarea>
+  </sdpi-item>
+  <sdpi-item>
+    <small class="fd-note">One per line. <code>Label = command</code> shows the label on the touch strip.</small>
+  </sdpi-item>
+  </div>
+  <div data-when="mode" data-is="range" data-default="list">
+  <sdpi-item label="Template">
+    <sdpi-textfield setting="template" placeholder="setradio {value}"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Minimum">
+    <sdpi-textfield setting="min" placeholder="1"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Maximum">
+    <sdpi-textfield setting="max" placeholder="10"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Step">
+    <sdpi-textfield setting="step" placeholder="1"></sdpi-textfield>
+  </sdpi-item>
+  </div>
+  <sdpi-item label="Wrap">
+    <sdpi-checkbox setting="wrap" label="Wrap around at the ends" default="true"></sdpi-checkbox>
+  </sdpi-item>
+  <sdpi-item label="Send with">
+    <sdpi-select setting="transport" default="bridge">
+      <option value="bridge">Bridge (invisible, recommended)</option>
+      <option value="console">F8 console</option>
+      <option value="chat">Chat box</option>
+    </sdpi-select>
+  </sdpi-item>
+  <details class="fd-advanced">
+    <summary>Game connection (all FiveDeck keys)</summary>
+  <div class="fd-heading">Bridge</div>
+  <sdpi-item>
+    <div class="fd-status" data-bridge-status>Checking the bridge…</div>
+  </sdpi-item>
+  <sdpi-item>
+    <sdpi-button data-bridge-install>Add the bind to fivem.cfg now</sdpi-button>
+  </sdpi-item>
+  <sdpi-item label="Bridge key">
+    <sdpi-select setting="bridgeKey" default="F24" global>
+      <option value="F13">F13</option>
+      <option value="F14">F14</option>
+      <option value="F15">F15</option>
+      <option value="F16">F16</option>
+      <option value="F17">F17</option>
+      <option value="F18">F18</option>
+      <option value="F19">F19</option>
+      <option value="F20">F20</option>
+      <option value="F21">F21</option>
+      <option value="F22">F22</option>
+      <option value="F23">F23</option>
+      <option value="F24">F24</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Setup">
+    <sdpi-checkbox setting="autoBridge" label="Install the bridge bind automatically" default="true" global></sdpi-checkbox>
+  </sdpi-item>
+  <sdpi-item>
+    <small class="fd-note">The bridge binds a key no keyboard has to <code>exec fxd:/fivedeck.cfg</code>. FiveDeck writes each press's commands into that file in <code>%APPDATA%\CitizenFX</code> and taps the key. Binds only run while you're in a server or story mode, not in menus or text boxes.</small>
+  </sdpi-item>
+  <div class="fd-heading">Input</div>
+  <sdpi-item label="Focus">
+    <sdpi-checkbox setting="focusGame" label="Bring FiveM to the front before sending" global></sdpi-checkbox>
+  </sdpi-item>
+  <sdpi-item label="Console key">
+    <sdpi-select setting="consoleKey" default="F8" global>
+      <option value="F8">F8</option>
+      <option value="GRAVE">` (grave)</option>
+      <option value="F1">F1</option>
+      <option value="F2">F2</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Chat key">
+    <sdpi-select setting="chatKey" default="T" global>
+      <option value="T">T</option>
+      <option value="Y">Y</option>
+      <option value="U">U</option>
+      <option value="RETURN">Enter</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Input delay">
+    <sdpi-range setting="inputDelayMs" min="30" max="600" step="10" default="90" global showlabels></sdpi-range>
+  </sdpi-item>
+  <sdpi-item label="Compatibility">
+    <sdpi-checkbox setting="scanCodeOnly" label="Send scan codes only" global></sdpi-checkbox>
+  </sdpi-item>
+  <div class="fd-heading">FiveM</div>
+  <sdpi-item label="FiveM.exe">
+    <sdpi-file setting="fivemPath" accept=".exe" global></sdpi-file>
+  </sdpi-item>
+  <sdpi-item>
+    <small class="fd-note">Leave empty to use the default install in <code>%LOCALAPPDATA%\FiveM</code>. FiveDeck only sends keys while a FiveM window is active.</small>
+  </sdpi-item>
+  </details>
+  <script src="fivedeck.js"></script>
+</body>
+</html>

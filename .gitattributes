@@ -11,3 +11,9 @@
 *.exe binary
 *.png binary
 *.streamDeckPlugin binary
+
+*.html text eol=lf
+*.js text eol=lf
+*.svg text eol=lf
+*.woff2 binary
+*.node binary

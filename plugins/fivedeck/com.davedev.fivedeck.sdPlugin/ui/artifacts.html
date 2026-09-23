@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Artifact Watch settings</title>
+  <link rel="stylesheet" href="fivedeck.css">
+  <script src="sdpi-components.js"></script>
+</head>
+<body>
+<sdpi-item label="Platform">
+    <sdpi-select setting="platform" default="win32">
+      <option value="win32">Windows</option>
+      <option value="linux">Linux</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Compare">
+    <sdpi-checkbox setting="compare" label="Compare with the build a server runs" default="true"></sdpi-checkbox>
+  </sdpi-item>
+  <div data-when="compare" data-is="true" data-default="true">
+  <sdpi-item label="Server">
+    <sdpi-select setting="slot" default="s1">
+      <option value="s1">Server 1</option>
+      <option value="s2">Server 2</option>
+      <option value="s3">Server 3</option>
+    </sdpi-select>
+  </sdpi-item>
+  </div>
+  <sdpi-item>
+    <small class="fd-note">Uses the same version feed as txAdmin. Tap to download the recommended build; hold for the latest. Critical means the build is below Cfx's critical version and should be updated.</small>
+  </sdpi-item>
+  <div data-when="compare" data-is="true" data-default="true">
+  <div data-when="slot" data-is="s1" data-default="s1">
+  <div class="fd-heading">Server 1 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s1.name" placeholder="Server 1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s1.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s1.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+
+  </div>
+  <div data-when="slot" data-is="s2" data-default="s1">
+  <div class="fd-heading">Server 2 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s2.name" placeholder="Server 2" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s2.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s2.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+
+  </div>
+  <div data-when="slot" data-is="s3" data-default="s1">
+  <div class="fd-heading">Server 3 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s3.name" placeholder="Server 3" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s3.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s3.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+
+  </div>
+  </div>
+  <script src="fivedeck.js"></script>
+</body>
+</html>

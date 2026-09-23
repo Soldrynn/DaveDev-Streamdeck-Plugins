@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g transform="translate(10 10) scale(0.36) translate(-36 -30)"><rect x="17" y="12" width="38" height="15" rx="4" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="32" width="38" height="15" rx="4" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24.5" cy="19.5" r="2.6" fill="#FFFFFF"/><circle cx="24.5" cy="39.5" r="2.6" fill="#FFFFFF"/><path d="M34 19.5h13M34 39.5h13" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

@@ -1,0 +1,52 @@
+{
+  "name": "stream-deck-fivedeck",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "FiveDeck runs FiveM commands, joins servers, and drives local FXServer development from a Stream Deck.",
+  "license": "Apache-2.0",
+  "author": "DaveDev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins/issues"
+  },
+  "homepage": "https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins#readme",
+  "keywords": [
+    "fivedeck",
+    "fivem",
+    "fxserver",
+    "cfx",
+    "elgato",
+    "stream-deck",
+    "stream-deck-plus",
+    "windows"
+  ],
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "assets": "node --experimental-strip-types scripts/generate-assets.mjs",
+    "ui": "node scripts/generate-ui.mjs",
+    "build": "node scripts/build-plugin.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check": "tsc --noEmit && npm test && node scripts/validate-assets.mjs && node scripts/validate-release.mjs && node scripts/smoke-plugin-bundle.mjs",
+    "validate": "streamdeck validate com.davedev.fivedeck.sdPlugin --no-update-check",
+    "pack": "streamdeck pack com.davedev.fivedeck.sdPlugin --output dist --force --no-update-check"
+  },
+  "dependencies": {
+    "@elgato/streamdeck": "^3.0.0",
+    "koffi": "^3.3.1"
+  },
+  "devDependencies": {
+    "@elgato/cli": "^1.10.0",
+    "@types/node": "^24.12.0",
+    "esbuild": "^0.28.2",
+    "sharp": "^0.35.4",
+    "typescript": "^7.0.2",
+    "ws": "^8.21.1"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

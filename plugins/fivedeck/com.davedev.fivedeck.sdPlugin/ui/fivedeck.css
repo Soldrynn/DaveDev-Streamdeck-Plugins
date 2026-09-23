@@ -1,0 +1,41 @@
+/* FiveDeck property inspector accents on top of sdpi-components. */
+.fd-heading {
+  margin: 14px 0 4px;
+  padding-left: 8px;
+  border-left: 3px solid #ff2c55;
+  color: #f8fafc;
+  font: 700 10px/1.4 "Segoe UI", sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.fd-note {
+  display: block;
+  color: #b8c0cc;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.fd-note code {
+  color: #f8fafc;
+  font-family: Consolas, "Cascadia Mono", monospace;
+}
+.fd-status {
+  margin: 2px 0 0;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: #1f1d1e;
+  color: #d6dbe2;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.fd-status[data-tone="good"] { box-shadow: inset 3px 0 #22c55e; }
+.fd-status[data-tone="warn"] { box-shadow: inset 3px 0 #f59e0b; }
+.fd-status[data-tone="bad"] { box-shadow: inset 3px 0 #ef4444; }
+details.fd-advanced > summary {
+  cursor: pointer;
+  margin: 14px 0 4px;
+  color: #b8c0cc;
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+[hidden] { display: none !important; }

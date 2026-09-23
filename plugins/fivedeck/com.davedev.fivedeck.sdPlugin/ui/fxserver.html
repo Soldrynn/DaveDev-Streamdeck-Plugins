@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FXServer settings</title>
+  <link rel="stylesheet" href="fivedeck.css">
+  <script src="sdpi-components.js"></script>
+</head>
+<body>
+<sdpi-item label="Server">
+    <sdpi-select setting="slot" default="s1">
+      <option value="s1">Server 1</option>
+      <option value="s2">Server 2</option>
+      <option value="s3">Server 3</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="FXServer.exe">
+    <sdpi-file setting="executable" accept=".exe"></sdpi-file>
+  </sdpi-item>
+  <sdpi-item label="Start">
+    <sdpi-select setting="mode" default="cfg">
+      <option value="cfg">Server with server.cfg</option>
+      <option value="txadmin">txAdmin</option>
+    </sdpi-select>
+  </sdpi-item>
+  <div data-when="mode" data-is="cfg" data-default="cfg">
+  <sdpi-item label="server.cfg">
+    <sdpi-file setting="configPath" accept=".cfg"></sdpi-file>
+  </sdpi-item>
+  </div>
+  <div data-when="mode" data-is="txadmin" data-default="cfg">
+  <sdpi-item label="txAdmin port">
+    <sdpi-textfield setting="txAdminPort" placeholder="40120" pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+  </div>
+  <sdpi-item label="Console">
+    <sdpi-select setting="consoleMode" default="hidden">
+      <option value="hidden">Hidden (FiveDeck log, commands, graceful stop)</option>
+      <option value="window">Own window (type into it yourself)</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Tap while running">
+    <sdpi-select setting="pressAction" default="log">
+      <option value="log">Open the live log</option>
+      <option value="restart">Restart the server</option>
+      <option value="txadmin">Open txAdmin</option>
+      <option value="nothing">Nothing</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Crashes">
+    <sdpi-checkbox setting="autoRestart" label="Restart automatically after a crash (up to 3 times in 5 minutes)"></sdpi-checkbox>
+  </sdpi-item>
+  <sdpi-item label="Extra arguments">
+    <sdpi-textfield setting="extraArgs" placeholder="+set onesync on"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item>
+    <small class="fd-note">The server runs from the folder that holds server.cfg (txAdmin runs from the FXServer folder). Tap to start; <b>hold to stop</b>. The red badge counts script errors since start. Hidden servers stop when Stream Deck closes.</small>
+  </sdpi-item>
+  <div data-when="slot" data-is="s1" data-default="s1">
+  <div class="fd-heading">Server 1 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s1.name" placeholder="Server 1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s1.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s1.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+
+  </div>
+  <div data-when="slot" data-is="s2" data-default="s1">
+  <div class="fd-heading">Server 2 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s2.name" placeholder="Server 2" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s2.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s2.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+
+  </div>
+  <div data-when="slot" data-is="s3" data-default="s1">
+  <div class="fd-heading">Server 3 connection (shared)</div>
+  <sdpi-item label="Name">
+    <sdpi-textfield setting="servers.s3.name" placeholder="Server 3" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Host">
+    <sdpi-textfield setting="servers.s3.host" placeholder="127.0.0.1" global></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Game port">
+    <sdpi-textfield setting="servers.s3.port" placeholder="30120" global pattern="\d{1,5}"></sdpi-textfield>
+  </sdpi-item>
+
+  </div>
+  <script src="fivedeck.js"></script>
+</body>
+</html>

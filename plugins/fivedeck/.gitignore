@@ -1,0 +1,13 @@
+node_modules/
+.tools/
+dist/
+logs/
+com.davedev.fivedeck.sdPlugin/bin/
+com.davedev.fivedeck.sdPlugin/LICENSE
+com.davedev.fivedeck.sdPlugin/NOTICE
+com.davedev.fivedeck.sdPlugin/THIRD_PARTY_NOTICES.md
+*.log
+
+# Branding render scratch
+branding/work/node_modules/
+branding/work/_tmp.html

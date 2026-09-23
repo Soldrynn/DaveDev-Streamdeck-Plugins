@@ -1,0 +1,222 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Actions": [
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/command-list",
+      "Name": "Game Command",
+      "States": [
+        {
+          "Image": "assets/actions/command"
+        },
+        {
+          "Image": "assets/actions/command-on"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.command",
+      "Tooltip": "Run FiveM console commands without opening chat. Supports hold (+/-) and toggle modes.",
+      "PropertyInspectorPath": "ui/command.html",
+      "DisableAutomaticStates": true
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/emote-list",
+      "Name": "Emote",
+      "States": [
+        {
+          "Image": "assets/actions/emote"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.emote",
+      "Tooltip": "Play an emote. Hold the key to cancel the current emote.",
+      "PropertyInspectorPath": "ui/emote.html",
+      "SupportedInMultiActions": false
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/chat-list",
+      "Name": "Chat Message",
+      "States": [
+        {
+          "Image": "assets/actions/chat"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.chat",
+      "Tooltip": "Type a message or chat command into FiveM chat.",
+      "PropertyInspectorPath": "ui/chat.html"
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/key-list",
+      "Name": "Game Key",
+      "States": [
+        {
+          "Image": "assets/actions/key"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.key",
+      "Tooltip": "Press or hold a key in FiveM. Use F13-F24 to bind FiveM controls to Stream Deck keys.",
+      "PropertyInspectorPath": "ui/key.html"
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/toggle-list",
+      "Name": "Dev Toggle",
+      "States": [
+        {
+          "Image": "assets/actions/toggle"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.toggle",
+      "Tooltip": "Toggle a FiveM developer overlay such as resmon, netgraph, or the FPS counter.",
+      "PropertyInspectorPath": "ui/toggle.html",
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/join-list",
+      "Name": "Join Server",
+      "States": [
+        {
+          "Image": "assets/actions/join"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.join",
+      "Tooltip": "Shows a server's live status. Tap to join; hold to switch servers now.",
+      "PropertyInspectorPath": "ui/join.html",
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/launch-list",
+      "Name": "Launch FiveM",
+      "States": [
+        {
+          "Image": "assets/actions/launch"
+        },
+        {
+          "Image": "assets/actions/launch-on"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.launch",
+      "Tooltip": "Launch FiveM or bring it to the front. Hold to quit the game.",
+      "PropertyInspectorPath": "ui/launch.html",
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/fxserver-list",
+      "Name": "FXServer",
+      "States": [
+        {
+          "Image": "assets/actions/fxserver"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.fxserver",
+      "Tooltip": "Start a local FXServer. Tap to open its live log; hold to stop it.",
+      "PropertyInspectorPath": "ui/fxserver.html",
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/server-command-list",
+      "Name": "Server Command",
+      "States": [
+        {
+          "Image": "assets/actions/server-command"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.servercommand",
+      "Tooltip": "Restart a resource or run server console commands, over the managed console or RCON.",
+      "PropertyInspectorPath": "ui/server-command.html"
+    },
+    {
+      "Controllers": [
+        "Keypad"
+      ],
+      "Icon": "assets/actions/artifact-list",
+      "Name": "Artifact Watch",
+      "States": [
+        {
+          "Image": "assets/actions/artifact"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.artifacts",
+      "Tooltip": "Compare your FXServer build with the recommended artifacts. Tap to download.",
+      "PropertyInspectorPath": "ui/artifacts.html",
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false
+    },
+    {
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "Icon": "assets/actions/dial",
+        "background": "assets/backgrounds/strip",
+        "layout": "layouts/dial.json",
+        "StackColor": "#FF2C55",
+        "TriggerDescription": {
+          "Rotate": "Choose a command or value",
+          "Push": "Run it",
+          "Touch": "Run it"
+        }
+      },
+      "Icon": "assets/actions/dial-list",
+      "Name": "Command Dial",
+      "PropertyInspectorPath": "ui/dial.html",
+      "States": [
+        {
+          "Image": "assets/actions/dial"
+        }
+      ],
+      "UUID": "com.davedev.fivedeck.dial",
+      "Tooltip": "Rotate through emotes or commands, or pick a number such as a radio channel, then press to run it."
+    }
+  ],
+  "Author": "DaveDev",
+  "Category": "FiveDeck",
+  "CategoryIcon": "assets/category",
+  "CodePath": "bin/plugin.js",
+  "Description": "FiveDeck runs FiveM commands and emotes without opening chat, joins servers by join code with live player counts, and starts, restarts, and watches local FXServer builds from your Stream Deck.",
+  "Icon": "assets/plugin-icon",
+  "Name": "FiveDeck",
+  "Nodejs": {
+    "Version": "24"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "SDKVersion": 3,
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "URL": "https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins",
+  "UUID": "com.davedev.fivedeck",
+  "Version": "0.1.0.0"
+}

@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories:
+      - /plugins/clef
+      - /plugins/fivedeck
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      elgato:
+        patterns:
+          - "@elgato/*"
+      build-tooling:
+        patterns:
+          - esbuild
+          - typescript
+          - "@types/*"
+          - sharp
+          - ws
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ci
