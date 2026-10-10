@@ -9,9 +9,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows-release-check:
     runs-on: windows-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -23,25 +28,41 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: plugins/${{ matrix.plugin }}/package-lock.json
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
+
+      - name: Test release tag validation
+        working-directory: .
+        run: node --test scripts/tests/*.test.mjs
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify registry signatures
+        run: npm audit signatures
+
+      - name: Audit dependency vulnerabilities
+        run: npm audit --audit-level=moderate
+
       - name: Build the plugin
         run: npm run build
+
+      - name: Smoke-test the published helper IPC
+        shell: pwsh
+        run: ./scripts/smoke-helper-ipc.ps1
 
       - name: Run checks
         run: npm run check
@@ -51,3 +72,11 @@ jobs:
 
       - name: Package the plugin
         run: npm run pack
+
+      - name: Upload the installer
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ matrix.plugin }}-streamDeckPlugin
+          path: plugins/${{ matrix.plugin }}/dist/*.streamDeckPlugin
+          if-no-files-found: error
+          retention-days: 14

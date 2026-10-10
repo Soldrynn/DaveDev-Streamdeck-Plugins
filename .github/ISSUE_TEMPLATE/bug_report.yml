@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a reproducible problem with a plugin.
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Plugin
+      options:
+        - Clef
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Clef, Stream Deck, Apple Music for Windows, and Windows versions.
+      placeholder: Clef 1.1.0.1, Stream Deck 7.1, Windows 11 24H2
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the action and its settings. Never paste passwords, account details, or license keys.
+      placeholder: |
+        1. Add the Play / Pause action
+        2. Play a song in Apple Music and press the key
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected and what happened
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Plugin log (optional)
+      description: Paste the relevant lines from the plugin's `logs` folder. Remove anything private first.
+      render: text

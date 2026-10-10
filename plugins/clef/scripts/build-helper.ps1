@@ -15,8 +15,14 @@ $dotnet = if (-not [string]::IsNullOrWhiteSpace($configuredDotnet)) {
 $project = Join-Path $projectRoot 'helper\ClefBridge\ClefBridge.csproj'
 $output = Join-Path $projectRoot 'com.davedev.clef.sdPlugin\helper'
 
-& $dotnet publish $project -c Release -r win-x64 --self-contained true -o $output
-if ($LASTEXITCODE -ne 0) { throw "Helper publish failed with exit code $LASTEXITCODE." }
+# SDK resolution starts at the working directory, where global.json selects .NET 10.
+Push-Location $projectRoot
+try {
+    & $dotnet publish $project -c Release -r win-x64 --self-contained true -o $output
+    if ($LASTEXITCODE -ne 0) { throw "Helper publish failed with exit code $LASTEXITCODE." }
+} finally {
+    Pop-Location
+}
 
 $helper = Join-Path $output 'ClefBridge.exe'
 & $helper --self-test

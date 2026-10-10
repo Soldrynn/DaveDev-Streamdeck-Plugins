@@ -185,7 +185,12 @@ To build Clef, you need the following development environment:
 
 - Windows 11 on an x64 computer.
 - Node.js 24 or later, including npm.
-- .NET 8 SDK for x64. The .NET runtime alone is not sufficient.
+- .NET 10 SDK for x64. The .NET runtime alone is not sufficient.
+- PowerShell 7 or later for the optional helper IPC smoke test.
+
+`global.json` selects a stable .NET 10 SDK and allows servicing and feature-band
+updates within .NET 10. An old project-local `.tools` installation takes priority
+over `PATH`; update that installation to .NET 10 as well.
 
 ### Configure .NET SDK discovery
 
@@ -213,7 +218,7 @@ Invoke-WebRequest -UseBasicParsing `
   -OutFile ".tools\dotnet-install.ps1"
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
   -File ".tools\dotnet-install.ps1" `
-  -Channel 8.0 `
+  -Channel 10.0 `
   -InstallDir ".tools" `
   -NoPath
 ```
@@ -228,6 +233,7 @@ From the `plugins/clef` directory, run the following commands in order:
 npm ci
 npm run build
 npm run check
+pwsh -NoProfile -File scripts/smoke-helper-ipc.ps1
 npm run validate
 npm run pack
 ```

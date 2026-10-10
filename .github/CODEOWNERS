@@ -1,0 +1,6 @@
+# Ownership routing; required reviews are configured separately in GitHub.
+*                    @Soldrynn
+/.github/            @Soldrynn
+/SECURITY.md         @Soldrynn
+/scripts/            @Soldrynn
+/plugins/*/scripts/  @Soldrynn
