@@ -11,7 +11,9 @@ Target `main` and enable:
 - Require a pull request before merging.
 - Require status checks after confirming their names from successful runs:
   `windows-release-check (clef)`, `Analyze (actions)`,
-  `Analyze (javascript-typescript)`, `Analyze (csharp)`, and `dependency-review`.
+  `Analyze (javascript-typescript)`, `Analyze (csharp)`, `dependency-review`,
+  and the separate `CodeQL` findings check. The `Analyze` jobs confirm scans ran;
+  the `CodeQL` check reports new security findings that can block the PR.
 - Require branches to be up to date before merging; resolve conversations.
 - Block force pushes and branch deletion.
 
@@ -22,12 +24,18 @@ review only when a second eligible reviewer is available. Review any bypass list
 explicitly; do not silently grant a broad bypass. Signed-commit enforcement is
 optional only after all contribution paths support it.
 
+Do not require the scheduled `analysis` (Scorecard) or `npm-audit` jobs for PRs:
+they do not run on pull requests. Dependabot configuration validation is useful
+when that file changes, but is not a universal required check.
+
 ## Release tag ruleset
 
 Target `clef-v*`. Restrict new tag creation to the designated release maintainer
 and block tag updates/deletion. Do not move, delete, or rename historical tags,
 including `v1.1.0.0`. Review how any maintainer bypass affects update/deletion
-before enabling it. No tags are created by this maintenance change.
+before enabling it. Prefer separate creation and immutability rulesets so a
+creation bypass does not also permit changing or deleting tags. No tags are
+created by this maintenance change.
 
 ## Code security
 

@@ -16,9 +16,13 @@ export function validateReleaseTag(tag, { manifest, packageJson, packageLock, pr
   assert.equal(packageJson.version, npmVersion, "Tag and npm package versions differ.");
   assert.equal(packageLock.version, npmVersion, "Tag and lockfile versions differ.");
   assert.equal(packageLock.packages?.[""]?.version, npmVersion, "Tag and lockfile root versions differ.");
-  const escaped = version.replaceAll(".", "\\.");
-  assert.match(project, new RegExp(`<Version>${escaped}</Version>`), "Tag and helper assembly versions differ.");
-  assert.match(program, new RegExp(`version = "${escaped}"`), "Tag and helper protocol versions differ.");
+  // Extract metadata with fixed patterns; never compile a pattern from a tag.
+  const assemblyVersions = [...project.matchAll(/<Version>([^<]*)<\/Version>/g)];
+  const protocolVersions = [...program.matchAll(/\bversion\s*=\s*"([^"\r\n]*)"/g)];
+  assert.equal(assemblyVersions.length, 1, "Expected exactly one helper assembly version.");
+  assert.equal(protocolVersions.length, 1, "Expected exactly one helper protocol version.");
+  assert.equal(assemblyVersions[0][1], version, "Tag and helper assembly versions differ.");
+  assert.equal(protocolVersions[0][1], version, "Tag and helper protocol versions differ.");
   return { plugin: "clef", version };
 }
 
