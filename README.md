@@ -28,6 +28,12 @@ Use [GitHub issues](https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins/issue
 for reproducible bugs and focused feature requests, and name the plugin in the
 title. Pull requests should keep each plugin self-contained.
 
+## Security and releases
+
+Report vulnerabilities using [the security policy](SECURITY.md). Maintainers can
+review [repository protection settings](docs/REPOSITORY-SECURITY.md) and the
+[release checklist](docs/RELEASING.md).
+
 ## License
 
 Every plugin in this repository is licensed under the

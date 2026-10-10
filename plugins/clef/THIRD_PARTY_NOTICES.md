@@ -141,7 +141,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## .NET runtime and Windows SDK projection (bundled inside ClefBridge.exe)
 
-The self-contained helper `helper/ClefBridge.exe` redistributes the .NET 8
+The self-contained helper `helper/ClefBridge.exe` redistributes the .NET 10
 runtime and libraries (.NET Foundation and contributors) together with the
 `Microsoft.Windows.SDK.NET` and `WinRT.Runtime` projection assemblies
 (Microsoft Corporation). Both are licensed under the MIT License.
