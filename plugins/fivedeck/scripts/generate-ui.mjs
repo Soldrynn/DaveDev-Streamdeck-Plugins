@@ -44,38 +44,45 @@ ${inner}
   </div>`;
 
 const functionKeys = Array.from({ length: 12 }, (_, i) => [`F${i + 13}`, `F${i + 13}`]);
-const transport = select("Send with", "transport", [
-  ["bridge", "Bridge (invisible, recommended)"],
-  ["console", "F8 console"],
-  ["chat", "Chat box"]
-], "bridge");
-const transportNote = note("<b>Bridge</b> runs anything instantly without opening chat or F8. <b>F8 console</b> needs no setup but can only run resource commands on normal FiveM builds. <b>Chat</b> types <code>/command</code> into chat.");
+const connectionPanel = `  <section class="fd-connection" aria-label="Direct FiveM connection">
+${heading("Direct FiveM connection")}
+  <sdpi-item>
+    <div class="fd-status" data-connection-status data-tone="neutral" role="status" aria-live="polite" aria-atomic="true">
+      <strong data-connection-title>Checking connection status…</strong>
+      <span data-connection-message>Reading FiveDeck's connection state.</span>
+      <span class="fd-status-detail" data-connection-instance>Primary client · 127.0.0.1:29200</span>
+    </div>
+    <small class="fd-note fd-transmission" data-connection-transmission>No command transmission reported in this inspector.</small>
+  </sdpi-item>
+  <sdpi-item>
+    <sdpi-button data-connection-test>Test connection</sdpi-button>
+  </sdpi-item>
+${note("Status shows the last result, not a live connection. The test sends no command. <b>Transmitted</b> means sent to FiveM, not confirmed as executed. Commands never fall back to typing into F8 or chat.")}
+  </section>`;
 
-const gameSettings = `  <details class="fd-advanced">
-    <summary>Game connection (all FiveDeck keys)</summary>
-${heading("Bridge")}
-  <sdpi-item>
-    <div class="fd-status" data-bridge-status>Checking the bridge…</div>
-  </sdpi-item>
-  <sdpi-item>
-    <sdpi-button data-bridge-install>Add the bind to fivem.cfg now</sdpi-button>
-  </sdpi-item>
-${select("Bridge key", "bridgeKey", functionKeys, "F24", " global")}
-${checkbox("Setup", "autoBridge", "Install the bridge bind automatically", true, " global")}
-${note("The bridge binds a key no keyboard has to <code>exec fxd:/fivedeck.cfg</code>. FiveDeck writes each press's commands into that file in <code>%APPDATA%\\CitizenFX</code> and taps the key. Binds only run while you're in a server or story mode, not in menus or text boxes.")}
-${heading("Input")}
-${checkbox("Focus", "focusGame", "Bring FiveM to the front before sending", false, " global")}
-${select("Console key", "consoleKey", [["F8", "F8"], ["GRAVE", "` (grave)"], ["F1", "F1"], ["F2", "F2"]], "F8", " global")}
-${select("Chat key", "chatKey", [["T", "T"], ["Y", "Y"], ["U", "U"], ["RETURN", "Enter"]], "T", " global")}
-  <sdpi-item label="Input delay">
-    <sdpi-range setting="inputDelayMs" min="30" max="600" step="10" default="90" global showlabels></sdpi-range>
-  </sdpi-item>
-${checkbox("Compatibility", "scanCodeOnly", "Send scan codes only", false, " global")}
-${heading("FiveM")}
-  <sdpi-item label="FiveM.exe">
+const executableSettings = `  <sdpi-item label="FiveM.exe">
     <sdpi-file setting="fivemPath" accept=".exe" global></sdpi-file>
   </sdpi-item>
-${note("Leave empty to use the default install in <code>%LOCALAPPDATA%\\FiveM</code>. FiveDeck only sends keys while a FiveM window is active.")}
+${note("Leave empty to use the default install in <code>%LOCALAPPDATA%\\FiveM</code>.")}`;
+
+const gameSettings = `${connectionPanel}
+  <details class="fd-advanced">
+    <summary>Connection settings &amp; setup (all command keys)</summary>
+${select("Client", "clientInstance", [["primary", "Primary · 127.0.0.1:29200"], ["secondary", "Legacy secondary (-cl2) · 127.0.0.1:29300"]], "primary", " global")}
+${note("<b>Legacy:</b> use the normal loopback Remote Console listener. The secondary client started with <code>-cl2</code> uses port 29300. <b>Enhanced:</b> open F8 → Console → Remote Console and enable it once; only the primary port 29200 is supported. Close F8, then test the connection. Enhanced compatibility still needs Windows in-game validation in this preview.")}
+${note("No FiveM resource or bridge bind is needed. Do not add <code>-devcon</code>: on Legacy it widens the listener beyond this PC. Version, command availability, and server permissions still apply.")}
+${executableSettings}
+  </details>`;
+
+const inputSettings = (withChat) => `  <details class="fd-advanced">
+    <summary>Keyboard input (Chat Message &amp; Game Key)</summary>
+${checkbox("Focus", "focusGame", "Bring FiveM to the front before sending keys", false, " global")}
+${withChat ? select("Chat key", "chatKey", [["T", "T"], ["Y", "Y"], ["U", "U"], ["RETURN", "Enter"]], "T", " global") : ""}
+${withChat ? `  <sdpi-item label="Input delay">
+    <sdpi-range setting="inputDelayMs" min="30" max="600" step="10" default="90" global showlabels></sdpi-range>
+  </sdpi-item>` : ""}
+${checkbox("Compatibility", "scanCodeOnly", "Send scan codes only", false, " global")}
+${note("These actions send keyboard input only while a FiveM window is active. These settings do not affect direct commands.")}
   </details>`;
 
 const slotSelect = select("Server", "slot", [["s1", "Server 1"], ["s2", "Server 2"], ["s3", "Server 3"]], "s1");
@@ -90,12 +97,11 @@ const rconNote = note("Commands go straight into the console of a hidden server 
 
 const pages = {
   command: page("Game Command settings", `
-${textarea("Commands", "commands", "e dance\n/me waves\nwait 1500\ne c", 5)}
-${note("One command per line; a leading <code>/</code> is optional. With the bridge, <code>wait 1000</code> pauses between lines, and <code>+commands</code> such as <code>+radiotalk</code> work in Hold mode.")}
+${textarea("Commands", "commands", "e dance\nwait 1500\ne c", 5)}
+${note("One command per line; a leading <code>/</code> is optional. <code>+commands</code> such as <code>+radiotalk</code> work in Hold mode. FiveM interprets <code>wait 1000</code>; transmission does not wait for execution. Maximum 1024 UTF-8 bytes per command batch. Availability depends on the game and server.")}
 ${select("Mode", "mode", [["press", "Press: run once"], ["hold", "Hold: + on press, − on release"], ["toggle", "Toggle: alternate two sets"]], "press")}
-${when("mode", "toggle", "press", textarea("Off commands", "commandsOff", "e c", 3))}
-${transport}
-${transportNote}
+${when("mode", "toggle", "press", `${textarea("Off commands", "commandsOff", "e c", 3)}
+${note("The key tracks FiveDeck's last requested toggle state, not a verified state in the game.")}`)}
 ${gameSettings}`),
 
   emote: page("Emote settings", `
@@ -105,14 +111,13 @@ ${note("FiveDeck runs <code>&lt;command&gt; &lt;emote&gt;</code>. Most emote men
 ${checkbox("Hold", "holdCancel", "Hold the key to cancel the emote", true)}
 ${when("holdCancel", "true", "true", textfield("Cancel with", "cancelCommand", "e c"))}
 ${checkbox("Caption", "caption", "Show the emote name on the key", true)}
-${transport}
 ${gameSettings}`),
 
   chat: page("Chat Message settings", `
 ${textarea("Message", "message", "brb, grabbing a coffee", 3)}
-${note("Each line is sent as its own message. Chat commands such as <code>/me</code> or <code>/ooc</code> work too.")}
+${note("This action deliberately types into chat. Each line is sent as its own message. Chat commands such as <code>/me</code> or <code>/ooc</code> work too.")}
 ${checkbox("Send", "send", "Send immediately (off leaves the last line open to edit)", true)}
-${gameSettings}`),
+${inputSettings(true)}`),
 
   key: page("Game Key settings", `
 ${select("Key", "key", [...functionKeys,
@@ -135,7 +140,7 @@ ${select("Key", "key", [...functionKeys,
 ${select("Mode", "mode", [["hold", "Mirror the Stream Deck key (hold)"], ["tap", "Tap"]], "hold")}
 ${checkbox("Caption", "caption", "Show the key name on the key", true)}
 ${note("F13–F24 exist on no keyboard. In FiveM open <b>Settings → Key Bindings → FiveM</b>, choose a control such as radio push-to-talk, then press this Stream Deck key to assign it. FiveM key bindings can't use modifiers, so leave them off for that.")}
-${gameSettings}`),
+${inputSettings(false)}`),
 
   toggle: page("Dev Toggle settings", `
 ${select("Overlay", "tool", [
@@ -150,7 +155,7 @@ ${select("Overlay", "tool", [
 ${when("tool", "custom", "resmon", `${textfield("Label", "customLabel", "HUD")}
 ${textfield("On", "customOn", "hud 1")}
 ${textfield("Off", "customOff", "hud 0")}`)}
-${note("These overlays are blocked in F8 on normal FiveM builds, so the toggle always uses the bridge. FiveM remembers them between sessions; if the key is out of step, press it twice.")}
+${note("Sends the on/off command directly. Command availability still depends on your FiveM build and server permissions. The key shows FiveDeck's last requested state, not a verified game state; FiveM can remember an overlay between sessions.")}
 ${gameSettings}`),
 
   join: page("Join Server settings", `
@@ -158,7 +163,7 @@ ${textfield("Server", "address", "cfx.re/join/abc123 or 127.0.0.1:30120")}
 ${textfield("Label", "label", "Shown instead of the server name")}
 ${checkbox("Status", "showStatus", "Show live status and players", true)}
 ${select("Refresh", "pollSeconds", [["15", "Every 15 seconds"], ["30", "Every 30 seconds"], ["60", "Every minute"], ["300", "Every 5 minutes"]], "60")}
-${note("Paste a join code, a cfx.re/join link, a server-list link, or an address. Tap to join. If you're already in a server, FiveM holds the link until you leave; <b>hold the key</b> to switch now (FiveDeck sends <code>disconnect</code> for you). Join codes refresh at most once a minute.")}
+${note("Primary client only: choose Primary above. Paste a join code, a cfx.re/join link, a server-list link, or an address. Tap to join. If you're already in a server, FiveM holds the link until you leave; <b>hold the key</b> to switch now (FiveDeck sends <code>disconnect</code> for you). Join codes refresh at most once a minute.")}
 ${gameSettings}`),
 
   launch: page("Launch FiveM settings", `
@@ -215,7 +220,6 @@ ${textfield("Minimum", "min", "1")}
 ${textfield("Maximum", "max", "10")}
 ${textfield("Step", "step", "1")}`)}
 ${checkbox("Wrap", "wrap", "Wrap around at the ends", true)}
-${transport}
 ${gameSettings}`)
 };
 

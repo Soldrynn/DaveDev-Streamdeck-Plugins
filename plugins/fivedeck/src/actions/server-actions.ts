@@ -5,7 +5,7 @@ import { artifactVerdict, fetchArtifactVersions, type ArtifactVersions, type Ser
 import { MIN_ENDPOINT_INTERVAL_MS, MIN_JOIN_INTERVAL_MS } from "../core/watcher.ts";
 import { bool, num, oneOf, serverSlot } from "../core/settings.ts";
 import { alert, ok, PressTracker, setImage, UUID, type FiveDeck, type Settings } from "./common.ts";
-import { reportFailure } from "./game-actions.ts";
+import { reportFailure, sendCommand, commandTarget, targetUnchanged } from "./game-actions.ts";
 
 /** Builds the Join Server key from a target and its latest snapshot. Exported for tests. */
 export function joinView(target: ServerTarget | undefined, snapshot: ServerSnapshot | undefined, label?: string): StatusKeyView {
@@ -46,6 +46,7 @@ export class JoinAction extends SingletonAction<Settings> {
   readonly #keys = new Map<string, JoinKey>();
   readonly #images = new Map<string, string>();
   readonly #press = new PressTracker(700);
+  readonly #targets = new Map<string, ReturnType<typeof commandTarget>>();
 
   constructor(fd: FiveDeck) {
     super();
@@ -62,6 +63,7 @@ export class JoinAction extends SingletonAction<Settings> {
     this.#keys.delete(ev.action.id);
     this.#images.delete(ev.action.id);
     this.#press.cancel(ev.action.id);
+    this.#targets.delete(ev.action.id);
   }
 
   override onDidReceiveSettings(ev: DidReceiveSettingsEvent<Settings>): void {
@@ -72,11 +74,21 @@ export class JoinAction extends SingletonAction<Settings> {
   }
 
   override onKeyDown(ev: KeyDownEvent<Settings>): void {
-    this.#press.down(ev.action.id, () => void this.#join(ev.action.id, true));
+    const target = commandTarget(this.#fd);
+    this.#targets.set(ev.action.id, target);
+    this.#press.down(ev.action.id, () => {
+      if (!targetUnchanged(this.#fd, target)) { reportFailure(this.#fd, ev.action, "Join Server", "Client connection changed during the press. Press again."); return; }
+      void this.#join(ev.action.id, true);
+    });
   }
 
   override onKeyUp(ev: KeyUpEvent<Settings>): void {
-    this.#press.up(ev.action.id, () => void this.#join(ev.action.id, false));
+    const target = this.#targets.get(ev.action.id);
+    this.#targets.delete(ev.action.id);
+    this.#press.up(ev.action.id, () => {
+      if (!target || !targetUnchanged(this.#fd, target)) { reportFailure(this.#fd, ev.action, "Join Server", "Client connection changed during the press. Press again."); return; }
+      void this.#join(ev.action.id, false);
+    });
   }
 
   async #join(id: string, switchNow: boolean): Promise<void> {
@@ -89,7 +101,11 @@ export class JoinAction extends SingletonAction<Settings> {
     try {
       const result = await this.#fd.game.join(key.target, switchNow);
       if (result === "no-fivem") reportFailure(this.#fd, key.action, "Join Server", "FiveM.exe wasn't found. Set its location in FiveDeck's game settings.");
-      else ok(key.action);
+      else {
+        await key.action.setTitle("SENT");
+        const timer = setTimeout(() => void key.action.setTitle().catch(() => undefined), 1800);
+        timer.unref?.();
+      }
     } catch (error) {
       reportFailure(this.#fd, key.action, "Join Server", error);
     }
@@ -134,6 +150,7 @@ export class LaunchAction extends SingletonAction<Settings> {
   readonly #fd: FiveDeck;
   readonly #actions = new Map<string, any>();
   readonly #press = new PressTracker(900);
+  readonly #targets = new Map<string, ReturnType<typeof commandTarget>>();
   #timer: NodeJS.Timeout | undefined;
   #running: boolean | undefined;
 
@@ -152,6 +169,7 @@ export class LaunchAction extends SingletonAction<Settings> {
   override onWillDisappear(ev: WillDisappearEvent<Settings>): void {
     this.#actions.delete(ev.action.id);
     this.#press.cancel(ev.action.id);
+    this.#targets.delete(ev.action.id);
     if (this.#actions.size === 0) {
       clearInterval(this.#timer);
       this.#timer = undefined;
@@ -159,13 +177,19 @@ export class LaunchAction extends SingletonAction<Settings> {
   }
 
   override onKeyDown(ev: KeyDownEvent<Settings>): void {
+    const target = commandTarget(this.#fd);
+    this.#targets.set(ev.action.id, target);
     this.#press.down(ev.action.id, () => {
-      this.#fd.game.run(["quit"], "console").then(() => ok(ev.action), error => reportFailure(this.#fd, ev.action, "Quit FiveM", error));
+      if (!targetUnchanged(this.#fd, target)) { reportFailure(this.#fd, ev.action, "Quit FiveM", "Client connection changed during the press. Press again."); return; }
+      sendCommand(this.#fd, ev.action, ["quit"]).catch(error => reportFailure(this.#fd, ev.action, "Quit FiveM", error));
     });
   }
 
   override onKeyUp(ev: KeyUpEvent<Settings>): void {
+    const target = this.#targets.get(ev.action.id);
+    this.#targets.delete(ev.action.id);
     this.#press.up(ev.action.id, async () => {
+      if (!target || !targetUnchanged(this.#fd, target)) { reportFailure(this.#fd, ev.action, "Launch FiveM", "Client connection changed during the press. Press again."); return; }
       const status = await this.#fd.game.status();
       if (status.running) {
         if (!(await this.#fd.game.focus())) alert(ev.action);

@@ -8,6 +8,7 @@ import { ChatAction, CommandAction, EmoteAction, GameKeyAction, ToggleAction } f
 import { ArtifactAction, JoinAction, LaunchAction } from "./actions/server-actions.ts";
 import { ServerCommandAction } from "./actions/server-command.ts";
 import { FxServerManager, systemDependencies } from "./core/fxserver.ts";
+import { handleConnectionRequest } from "./core/connection-ui.ts";
 import { GameController } from "./core/game.ts";
 import { inputSettings, type GlobalSettings } from "./core/settings.ts";
 import { ServerWatcher } from "./core/watcher.ts";
@@ -48,29 +49,22 @@ const globalChanged = () => {
 process.on("unhandledRejection", reason => streamDeck.logger.warn(`Unhandled rejection: ${String(reason)}`));
 process.on("uncaughtException", error => streamDeck.logger.error(`Uncaught exception: ${error.stack ?? String(error)}`));
 // Hidden servers also quit on their own when stdin closes; this makes the shutdown explicit.
-process.on("exit", () => servers.stopAll());
+process.on("exit", () => { fd.game.dispose(); servers.stopAll(); });
+for (const signal of ["SIGINT", "SIGTERM"] as const) process.once(signal, () => { fd.game.dispose(); servers.stopAll(); process.exit(0); });
 
 streamDeck.settings.onDidReceiveGlobalSettings(ev => {
+  const previous = fd.input().clientInstance;
   globalSettings = (ev.settings ?? {}) as GlobalSettings;
+  if (previous !== fd.input().clientInstance) fd.game.connection.reset();
   globalChanged();
 });
 
-// Property inspector requests that need the plugin's view of the machine.
-streamDeck.ui.onSendToPlugin<{ event?: string }>(async ev => {
-  const request = ev.payload?.event;
-  if (request !== "bridge-status" && request !== "bridge-install") return;
-  const settings = inputSettings(globalSettings);
-  const result = request === "bridge-install" ? await fd.game.installBridgeOffline() : undefined;
-  const [state, status, fivem] = await Promise.all([fd.game.bridgeState(), fd.game.status(), fd.game.fivemExecutable()]);
-  await streamDeck.ui.sendToPropertyInspector({
-    event: "bridge-status",
-    key: settings.bridgeKey,
-    state,
-    result: result ?? null,
-    gameRunning: status.running,
-    fivem: fivem ?? null,
-    platform: process.platform
-  });
+// Only status and an identity handshake are exposed to the property inspector.
+const sendConnectionStatus = () => streamDeck.ui.sendToPropertyInspector({ event: "connection-status", ...fd.game.connection.status }).catch(() => undefined);
+fd.game.connection.subscribe(() => { void sendConnectionStatus(); });
+streamDeck.ui.onSendToPlugin<{ event?: string; clientInstance?: string }>(async ev => {
+  await handleConnectionRequest(ev.payload, fd.game.connection, status =>
+    streamDeck.ui.sendToPropertyInspector({ event: "connection-status", ...status }).catch(() => undefined));
 });
 
 for (const action of [
@@ -90,6 +84,8 @@ for (const action of [
 }
 
 await streamDeck.connect();
+const initialInstance = fd.input().clientInstance;
 globalSettings = ((await streamDeck.settings.getGlobalSettings()) ?? {}) as GlobalSettings;
+if (initialInstance !== fd.input().clientInstance) fd.game.connection.reset();
 globalChanged();
 log(`FiveDeck ${streamDeck.info.plugin.version} ready (${Object.keys(UUID).length} actions).`);

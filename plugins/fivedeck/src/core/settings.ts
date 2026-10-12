@@ -5,10 +5,14 @@
  * profile.
  */
 
-export type Transport = "bridge" | "console" | "chat";
+import type { ClientInstance } from "./devcon.ts";
+
+export type Transport = "direct";
 
 export interface GlobalSettings {
   [key: string]: unknown;
+  /** Legacy bridge fields are retained for profile compatibility but no longer used. */
+  clientInstance?: string;
   bridgeKey?: string;
   consoleKey?: string;
   chatKey?: string;
@@ -31,15 +35,12 @@ export const SERVER_SLOTS = ["s1", "s2", "s3"] as const;
 export type ServerSlotId = (typeof SERVER_SLOTS)[number];
 
 export interface InputSettings {
-  bridgeKey: string;
-  consoleKey: string;
+  clientInstance: ClientInstance;
   chatKey: string;
   inputDelayMs: number;
   scanCodeOnly: boolean;
   focusGame: boolean;
   fivemPath: string;
-  /** Install the bridge bind automatically (fivem.cfg while closed, F8 while running). */
-  autoBridge: boolean;
 }
 
 export function str(value: unknown, fallback = ""): string {
@@ -63,20 +64,14 @@ export function oneOf<T extends string>(value: unknown, options: readonly T[], f
   return typeof value === "string" && (options as readonly string[]).includes(value) ? (value as T) : fallback;
 }
 
-/** The bridge key must be one no keyboard has, so FiveDeck never hijacks a key someone presses. */
-const BRIDGE_KEYS = /^F(?:1[3-9]|2[0-4])$/;
-
 export function inputSettings(global: GlobalSettings): InputSettings {
-  const bridgeKey = str(global.bridgeKey).toUpperCase();
   return {
-    bridgeKey: BRIDGE_KEYS.test(bridgeKey) ? bridgeKey : "F24",
-    consoleKey: str(global.consoleKey) || "F8",
+    clientInstance: oneOf(global.clientInstance, ["primary", "secondary"] as const, "primary"),
     chatKey: str(global.chatKey) || "T",
     inputDelayMs: num(global.inputDelayMs, 90, 30, 600),
     scanCodeOnly: bool(global.scanCodeOnly),
     focusGame: bool(global.focusGame),
-    fivemPath: str(global.fivemPath),
-    autoBridge: bool(global.autoBridge, true)
+    fivemPath: str(global.fivemPath)
   };
 }
 

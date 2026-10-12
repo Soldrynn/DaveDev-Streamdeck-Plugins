@@ -16,7 +16,7 @@
         }
       ],
       "UUID": "com.davedev.fivedeck.command",
-      "Tooltip": "Run FiveM console commands without opening chat. Supports hold (+/-) and toggle modes.",
+      "Tooltip": "Transmit FiveM commands through the local console connection. Hold and toggle modes supported; execution is not confirmed.",
       "PropertyInspectorPath": "ui/command.html",
       "DisableAutomaticStates": true
     },
@@ -197,12 +197,12 @@
     }
   ],
   "Author": "DaveDev",
-  "Category": "FiveDeck",
+  "Category": "FiveDeck Preview",
   "CategoryIcon": "assets/category",
   "CodePath": "bin/plugin.js",
-  "Description": "FiveDeck runs FiveM commands and emotes without opening chat, joins servers by join code with live player counts, and starts, restarts, and watches local FXServer builds from your Stream Deck.",
+  "Description": "Preview build: direct local FiveM command dispatch with connection feedback, plus explicit chat/key controls and FXServer tools. Windows in-game validation required.",
   "Icon": "assets/plugin-icon",
-  "Name": "FiveDeck",
+  "Name": "FiveDeck Preview",
   "Nodejs": {
     "Version": "24"
   },
@@ -218,5 +218,5 @@
   },
   "URL": "https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins",
   "UUID": "com.davedev.fivedeck",
-  "Version": "0.1.0.0"
+  "Version": "0.2.0.1"
 }

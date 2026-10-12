@@ -39,3 +39,10 @@ details.fd-advanced > summary {
   text-transform: uppercase;
 }
 [hidden] { display: none !important; }
+.fd-status > strong,
+.fd-status > span { display: block; }
+.fd-status > strong { color: #f8fafc; font-size: 11px; }
+.fd-status > span { margin-top: 4px; }
+.fd-status-detail { color: #b8c0cc; }
+.fd-transmission { margin-top: 6px; }
+.fd-status[data-tone="neutral"] { box-shadow: inset 3px 0 #94a3b8; }

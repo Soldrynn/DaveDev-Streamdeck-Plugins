@@ -2,7 +2,7 @@ import { SingletonAction, type DialDownEvent, type DialRotateEvent, type DidRece
 import { bool, num, oneOf, str } from "../core/settings.ts";
 import { commandLines, fillTemplate, truncateText } from "../core/text.ts";
 import { UUID, type FiveDeck, type Settings } from "./common.ts";
-import { reportFailure, transportOf } from "./game-actions.ts";
+import { reportFailure, sendCommand } from "./game-actions.ts";
 
 export interface DialItem {
   label: string;
@@ -92,7 +92,6 @@ export class DialAction extends SingletonAction<Settings> {
   override onWillAppear(ev: WillAppearEvent<Settings>): void {
     this.#settings.set(ev.action.id, ev.payload.settings);
     this.#render(ev.action);
-    if (transportOf(ev.payload.settings) === "bridge") this.#fd.game.ensureBridgeSoon();
   }
 
   override onWillDisappear(ev: WillDisappearEvent<Settings>): void {
@@ -128,7 +127,7 @@ export class DialAction extends SingletonAction<Settings> {
     const settings = this.#settings.get(action.id) ?? {};
     const lines = currentCommand(dialState(settings));
     try {
-      await this.#fd.game.run(lines, transportOf(settings));
+      await sendCommand(this.#fd, action, lines);
     } catch (error) {
       reportFailure(this.#fd, action, "Command Dial", error);
     }

@@ -7,14 +7,15 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-555555)](LICENSE)
 
 FiveDeck connects any Elgato Stream Deck to FiveM. It runs commands and emotes
-without opening chat, joins servers by join code with live player counts, and
-starts, restarts, and watches a local FXServer while you develop. FiveDeck is a
+over a direct local connection without opening chat or F8, joins servers by
+join code with live player counts, and starts, restarts, and watches a local FXServer while you develop. FiveDeck is a
 standalone Stream Deck plugin: servers don't need to install a resource, and
 players don't need to install anything in FiveM.
 
-> **Preview release.** FiveDeck 0.1 is built from the FiveM client and FXServer
-> source code and covered by automated tests. It has not yet been tested
-> against every FiveM build, keyboard layout, and server setup. Please
+> **Direct-connection preview.** This version includes automated transport tests,
+> but still needs Windows in-game validation, including FiveM Enhanced. A
+> successful connection test does not prove that a particular command executed.
+> Command support varies by client version and server permissions. Please
 > [report anything that doesn't work](https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins/issues/new/choose).
 
 ## Features
@@ -25,7 +26,7 @@ For players:
 
 | Action | Press | Shows |
 | --- | --- | --- |
-| Game Command | Runs one or more console commands. In Hold mode, `+commands` run on press and `-commands` on release. In Toggle mode, it alternates between two sets. | The command icon, lit while a toggle is on |
+| Game Command | Runs one or more console commands. In Hold mode, `+commands` run on press and `-commands` on release. In Toggle mode, it alternates between two sets. | The command icon, lit for the last requested toggle state |
 | Emote | Plays an emote; hold the key to cancel it | The emote name |
 | Chat Message | Types a message or chat command into chat | Static icon |
 | Game Key | Presses or holds a key, such as F13–F24, in the game | The key name |
@@ -36,7 +37,7 @@ For developers:
 
 | Action | Press | Shows |
 | --- | --- | --- |
-| Dev Toggle | Turns resmon, netgraph, FPS, perf, streaming debug, or net event log on or off | An on/off switch |
+| Dev Toggle | Turns resmon, netgraph, FPS, perf, streaming debug, or net event log on or off | The last requested on/off state, not verified game state |
 | FXServer | Tap to start (or open the live log); hold to stop | Status, uptime, players, and a script-error count |
 | Server Command | Runs `ensure`, `restart`, `stop`, or `refresh` for a resource, or any console commands | The resource name |
 | Artifact Watch | Tap to download the recommended build; hold for the latest | Your build compared with the recommended and critical builds |
@@ -61,65 +62,105 @@ To use FiveDeck, you need the following:
 
 To install FiveDeck, do the following:
 
-1. Download `com.davedev.fivedeck.streamDeckPlugin` from the
-   [latest GitHub release](https://github.com/Soldrynn/DaveDev-Streamdeck-Plugins/releases/latest).
+1. Export a backup of your Stream Deck profile, then use the supplied
+   `FiveDeck-0.2.0.1-direct-preview.streamDeckPlugin` test installer. This preview
+   is not a public stable release; it updates the existing FiveDeck plugin.
 2. Double-click the downloaded file, and then approve the installation in
    Stream Deck.
-3. In the Stream Deck action list, expand the **FiveDeck** category.
+3. In the Stream Deck action list, expand the **FiveDeck Preview** category.
 4. Drag an action such as **Emote** or **Join Server** onto a key.
 
-## How FiveDeck talks to FiveM
+## Set up direct commands
 
-FiveDeck sends keyboard input to FiveM, and it has three ways to deliver a
-command.
+Game Command, Emote, Dev Toggle, and Command Dial send commands to FiveM's
+local Remote Console connection. Join Server's switch action and Launch
+FiveM's quit action also use this connection. No FiveM resource, bridge bind,
+or command-file installation is needed. Command actions never fall back to
+opening F8, typing into chat, or sending a hidden keyboard shortcut.
 
-### The bridge (default)
+1. Start FiveM normally.
+2. Open a command action's settings in Stream Deck. Under **Connection settings
+   & setup**, choose the **Client**. This setting applies to all command keys
+   and dials:
+   - **Primary:** `127.0.0.1:29200`.
+   - **Legacy secondary (-cl2):** `127.0.0.1:29300`, for the secondary Legacy
+     client started with `-cl2`. Enhanced supports only the primary port 29200.
+3. **FiveM Legacy:** use its normal loopback listener. Do not add `-devcon`;
+   on Legacy that option widens the listener's network binding beyond this PC.
+   **FiveM Enhanced:** Remote Console is disabled by default. Open **F8 →
+   Console → Remote Console** and enable it once, then close F8. FiveDeck does
+   not change this setting for you. Enhanced compatibility still needs
+   in-game validation in this preview.
+4. Click **Test connection**. It performs the Remote Console handshake without
+   running a command. The result should say **FiveM responded**.
+5. Return to the game and press your Stream Deck command key, or press/touch
+   the Command Dial. Each intentional press opens its own connection, sends
+   the command batch, and closes the connection.
 
-FiveM runs key-bound commands with full console rights, and its `exec` command
-can read files from `fxd:/`, which is `%APPDATA%\CitizenFX`. FiveDeck binds one
-key that no keyboard has (F24 by default) to `exec fxd:/fivedeck.cfg`. On each
-press, it writes that key's commands into the file and taps F24, and FiveM runs
-them on the next frame. The bridge has the following advantages:
+### First safe in-game test
 
-- It doesn't open chat or the console.
-- A key can run any number of commands, including `wait 1000` pauses.
-- It works with every client command, including developer commands that the F8
-  console blocks on normal FiveM builds.
+For the complete prioritized Windows checklist, including backup, recovery, focus,
+and session tests, see [Windows testing](docs/WINDOWS-TESTING.md).
 
-FiveDeck installs the bind for you, once. If FiveM is closed, it adds this
-line to `%APPDATA%\CitizenFX\fivem.cfg` and first saves a backup as
-`fivem.cfg.fivedeck-backup`:
+Add **Game Command**, select **Press**, and enter `echo FIVEDECK_TEST`. Run
+**Test connection**, return to FiveM, and press the Stream Deck key once.
+The key briefly shows **SENDING**, then **SENT**. Neither F8 nor chat should
+open. `echo` changes no game state; if you want to confirm processing, open F8
+manually afterward and look for `FIVEDECK_TEST`, then close it. That manual
+inspection is only for this diagnostic. Next test a harmless command known
+to exist on your server, such as your configured emote command.
 
-```text
-bind KEYBOARD F24 "exec fxd:/fivedeck.cfg"
-```
+**CHECK LINK** means dispatch failed; inspect the connection panel. **CHECK
+GAME** means transmission began but its result is uncertain. Check the game
+before repeating a command. **SENT** confirms local transmission only.
 
-If FiveM is running, FiveDeck types the same `bind` command into F8 the first
-time you use the bridge. F8 allows `bind` on every FiveM build. FiveDeck never
-replaces a bind you already have on the bridge key; it tells you to pick
-another key instead. To install the bind yourself instead, turn off **Install
-the bridge bind automatically** and type this into F8:
+### Understand connection feedback
 
-```text
-bind keyboard F24 "exec fxd:/fivedeck.cfg"
-```
+The connection panel is visible without opening advanced settings, including
+on Command Dial. It shows the **last connection result**, not a continuously
+monitored socket. **FiveM responded** means the handshake succeeded at that
+point. **Command transmitted** means the command was sent; it does not confirm
+that FiveM accepted or executed it. The panel reports the last transmission
+time seen by that inspector and labels execution as unconfirmed.
 
-About three seconds after each use, FiveDeck clears the file so an old command
-can't run again.
+A connection failure produces a warning instead of keyboard input. FiveDeck
+never automatically reconnects or retries a command. After fixing the cause,
+use **Test connection** and make a new deliberate press when ready. A command
+may already have executed even if the connection failed afterward, so check
+the game before repeating an action with side effects.
 
-### F8 console and chat
+Connection success does not establish that a particular command is allowed. A
+command must exist and be allowed by your FiveM build and server. A chat-only
+command may require the explicit **Chat Message** action instead.
 
-Every command action can instead type into the F8 console or the chat box. The
-console needs no setup, but on normal FiveM builds it only allows resource
-commands and a few built-ins such as `connect`, `disconnect`, and `quit`. Chat
-sends `/command` or plain messages the way you would type them.
+### Command batches and holds
 
-### Safety
+Enter one command per line; a leading `/` is optional. Each press sends one
+batch, limited to **1024 UTF-8 bytes** in this preview. FiveM interprets
+`wait 1000` and other command-buffer syntax; **Command transmitted** does not
+wait for those commands or delays to finish. In Hold mode, `+commands` run on
+press and matching `-commands` are sent on release. A lost connection can
+prevent the release from reaching the game; use the game's own control to
+release it if needed. FiveDeck cancels releases when the selected client,
+game process or connection generation changes, rather than replaying them
+into another session. Prefer Game Key for critical push-to-talk controls.
 
-FiveDeck sends keys only while a FiveM or RedM window is in the foreground. If
-you switch to another window, a key press does nothing instead of typing into
-that window. To have FiveDeck bring FiveM to the front first, turn on **Bring
-FiveM to the front before sending**.
+### Existing profiles
+
+Existing command-action keys using the old **Bridge**, **F8 console**, or
+**Chat** transport automatically use the direct connection. There is no
+per-key transport selector or bridge auto-install step anymore. The explicit
+**Chat Message** action is unchanged and still types into chat. **Game Key**
+still sends the key you choose. Old bridge binds are no longer used by command
+actions; FiveDeck does not need to install or rewrite them.
+
+### Keyboard input stays explicit
+
+**Chat Message** and **Game Key** still send keyboard input. They only send
+keys while a FiveM or RedM window is in the foreground. To bring FiveM to the
+front first, enable **Bring FiveM to the front before sending keys** in their
+**Keyboard input** settings. Chat key, typing delay, and scan-code settings
+apply to these input actions, not to direct commands.
 
 ## Use the player actions
 
@@ -137,6 +178,9 @@ To make a Stream Deck key work like a held key, do one of the following:
 
 ### Join and switch servers
 
+Join Server supports the **primary client only**. Select Primary before using
+it. Legacy secondary remains available for ordinary command keys and dials.
+
 **Join Server** accepts a join code (`abc123`), a `cfx.re/join` link, a
 server-list link, a `fivem://connect` link, a pasted `connect` command, or an
 address such as `127.0.0.1:30120`.
@@ -148,8 +192,9 @@ same way a browser's **Connect** button does.
 FiveM doesn't reject a link it receives while you're in a server. It holds the
 link until the session ends, which is why join links often seem blocked. To
 switch servers in one press, **hold** the Join Server key: FiveDeck sends the
-link and then `disconnect`, and FiveM connects to the new server as it leaves
-the old one.
+link and then sends `disconnect` through the direct connection. This requires
+a working Remote Console connection; FiveM handles the pending link as it
+leaves the old server.
 
 The key shows the server's name, player count, and capacity. For addresses,
 FiveDeck reads the server's own `/dynamic.json` and `/info.json`. For join
@@ -213,37 +258,57 @@ feed with the build your server reports in `/info.json`, and shows
 
 ## Troubleshoot FiveDeck
 
-### A key flashes a warning and nothing happens
+### A command key flashes a warning and nothing happens
 
-Check the following:
-
-- FiveM is the active window, or **Bring FiveM to the front before sending**
-  is on.
-- You're in a server or story mode. FiveM doesn't run key binds in the main
-  menu, the pause menu, or while a text box such as chat is open.
-- The **Game connection** section of any FiveDeck key shows **Bridge ready**.
+- Open that action's settings and read the connection panel above the advanced
+  settings. Confirm that FiveM is running and **Client** selects the intended
+  primary or Legacy secondary instance.
+- On Enhanced, enable **F8 → Console → Remote Console** once. Enhanced uses
+  port 29200 only. On Legacy, do not add `-devcon` to fix a connection failure.
+- Click **Test connection**. If FiveM responds but the command has no effect,
+  check the command name, client version, and server permissions. A successful
+  handshake or transmission is not execution confirmation.
+- For **Chat Message** or **Game Key**, keep FiveM active or enable **Bring
+  FiveM to the front before sending keys**. FiveM key bindings can be blocked
+  in menus and text boxes.
 
 The plugin log in `%APPDATA%\Elgato\StreamDeck\Plugins\com.davedev.fivedeck.sdPlugin\logs`
-records why each press was refused.
+records connection and command failures. FiveDeck does not retry failed
+commands or switch to typing; check the game before deliberately pressing
+again.
 
 ### A developer overlay is out of step
 
-FiveM remembers `resmon`, `netgraph`, and the other overlays between sessions,
-and FiveDeck can't read their current state. Press the key twice to bring it
-back in step.
+The Dev Toggle key tracks FiveDeck's last requested state and alternates the
+next command it sends. It cannot verify an overlay's actual state. FiveM may
+remember overlays between sessions, and a command may be rejected by the
+client or server. Check the overlay in the game; if the connection works and
+the command is allowed, press again to request the opposite state.
 
 ### Typed text is wrong on my keyboard layout
 
 FiveDeck types text as Unicode characters, so typed text doesn't depend on the
-keyboard layout. Keys such as the console and chat keys are sent as a virtual
-key plus its scan code. If one of them doesn't respond, turn on **Send scan
-codes only**, or raise **Input delay** on slower computers.
+keyboard layout. This applies to **Chat Message**. Chat-opening keys and
+**Game Key** use a virtual key plus its scan code. If one does not respond,
+turn on **Send scan codes only**, or raise **Input delay** for chat on slower
+computers. These settings do not affect direct commands.
 
 ## Known limitations
 
 - FiveDeck supports Windows only, because FiveM and its input run on Windows.
-- Key binds don't run in menus or while a text field has focus, which is
-  FiveM's own rule.
+- The direct protocol has automated tests but still needs Windows in-game
+  validation, including Enhanced. No command execution acknowledgement is
+  available; connection and transmission results are the only confirmations.
+- The client command receiver does not reassemble fragmented command packets.
+  FiveDeck uses one bounded write per fresh connection to reduce this risk,
+  but TCP can still split a write. Transmission does not prove full receipt
+  or execution.
+- The direct connection is local-only. FiveDeck does not enable Remote Console,
+  widen its binding, or change firewall settings.
+- Commands and developer overlays remain subject to the client build,
+  command availability, and server permissions.
+- Game Key bindings may not run in menus or while a text field has focus,
+  which is FiveM's own rule.
 - FiveM key bindings can't use modifier keys, so use F13–F24 without
   modifiers for **Game Key** controls that you bind in FiveM.
 - Join-code status depends on the public Cfx server list, which can rate-limit
@@ -253,8 +318,11 @@ codes only**, or raise **Input delay** on slower computers.
 
 ## Security and privacy
 
-FiveDeck doesn't collect telemetry. It sends keys only to FiveM windows, starts
-FXServer and FiveM directly instead of through a command shell, and keeps RCON
+FiveDeck doesn't collect telemetry. Direct client commands connect only to
+`127.0.0.1` on the selected port. Keep the Remote Console listener local;
+FiveDeck does not add authentication to it or change your network settings.
+Explicit keyboard actions send keys only to FiveM windows. FiveDeck starts
+FXServer and FiveM directly instead of through a command shell and keeps RCON
 passwords out of shareable profiles. See the repository's
 [security policy](../../SECURITY.md) to report a vulnerability.
 
@@ -287,7 +355,7 @@ FiveDeck lives in `plugins/fivedeck`:
 | `branding/` | App icon source, Marketplace thumbnail and gallery, and their render scripts. |
 | `com.davedev.fivedeck.sdPlugin/` | Manifest, generated property inspectors, layouts, and assets. |
 | `scripts/` | Build, asset and UI generators, validation, and the bundle smoke test. |
-| `src/core/` | FiveM bridge, Windows input, FXServer supervision, RCON, server queries, and key art. |
+| `src/core/` | FiveM direct transport, Windows input, FXServer supervision, RCON, server queries, and key art. |
 | `src/actions/` | Stream Deck actions. |
 | `tests/` | Behaviour tests that run without Stream Deck or FiveM. |
 

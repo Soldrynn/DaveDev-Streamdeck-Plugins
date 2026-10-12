@@ -1,6 +1,6 @@
 {
   "name": "stream-deck-fivedeck",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "FiveDeck runs FiveM commands, joins servers, and drives local FXServer development from a Stream Deck.",
@@ -30,9 +30,10 @@
     "ui": "node scripts/generate-ui.mjs",
     "build": "node scripts/build-plugin.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "check": "tsc --noEmit && npm test && node scripts/validate-assets.mjs && node scripts/validate-release.mjs && node scripts/smoke-plugin-bundle.mjs",
+    "check": "tsc --noEmit && npm test && node scripts/test-inspector.mjs && node scripts/validate-assets.mjs && node scripts/validate-release.mjs && node scripts/smoke-plugin-bundle.mjs",
     "validate": "streamdeck validate com.davedev.fivedeck.sdPlugin --no-update-check",
-    "pack": "streamdeck pack com.davedev.fivedeck.sdPlugin --output dist --force --no-update-check"
+    "pack": "streamdeck pack com.davedev.fivedeck.sdPlugin --output dist --force --no-update-check",
+    "test:inspector": "node scripts/test-inspector.mjs"
   },
   "dependencies": {
     "@elgato/streamdeck": "^3.0.0",

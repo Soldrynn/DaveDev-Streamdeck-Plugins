@@ -31,10 +31,11 @@ test("settings readers clamp untrusted values", () => {
   assert.equal(num("", 90, 30, 600), 90);
   assert.equal(oneOf("chat", ["bridge", "console", "chat"] as const, "bridge"), "chat");
   assert.equal(oneOf("rm -rf", ["bridge", "console"] as const, "bridge"), "bridge");
-  assert.deepEqual(inputSettings({}), { bridgeKey: "F24", consoleKey: "F8", chatKey: "T", inputDelayMs: 90, scanCodeOnly: false, focusGame: false, fivemPath: "", autoBridge: true });
+  assert.deepEqual(inputSettings({}), { clientInstance: "primary", chatKey: "T", inputDelayMs: 90, scanCodeOnly: false, focusGame: false, fivemPath: "" });
   assert.deepEqual(serverSlot({ servers: { s2: { name: "Staging", host: "10.0.0.2", port: "30125", password: "pw" } } }, "s2"),
     { id: "s2", name: "Staging", host: "10.0.0.2", port: 30125, password: "pw" });
   assert.equal(serverSlot({}, "bogus").id, "s1");
-  assert.equal(inputSettings({ bridgeKey: "f13" }).bridgeKey, "F13");
-  assert.equal(inputSettings({ bridgeKey: "W" }).bridgeKey, "F24", "ordinary keys are refused as bridge keys");
+  assert.equal(inputSettings({ clientInstance: "secondary" }).clientInstance, "secondary");
+  assert.equal(inputSettings({ clientInstance: "remote.example" }).clientInstance, "primary");
+  assert.deepEqual(inputSettings({ bridgeKey: "W", consoleKey: "F8", autoBridge: true }), inputSettings({}), "legacy automatic typing settings are ignored");
 });

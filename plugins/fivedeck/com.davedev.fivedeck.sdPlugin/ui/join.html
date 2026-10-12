@@ -25,71 +25,44 @@
     </sdpi-select>
   </sdpi-item>
   <sdpi-item>
-    <small class="fd-note">Paste a join code, a cfx.re/join link, a server-list link, or an address. Tap to join. If you're already in a server, FiveM holds the link until you leave; <b>hold the key</b> to switch now (FiveDeck sends <code>disconnect</code> for you). Join codes refresh at most once a minute.</small>
+    <small class="fd-note">Primary client only: choose Primary above. Paste a join code, a cfx.re/join link, a server-list link, or an address. Tap to join. If you're already in a server, FiveM holds the link until you leave; <b>hold the key</b> to switch now (FiveDeck sends <code>disconnect</code> for you). Join codes refresh at most once a minute.</small>
   </sdpi-item>
+  <section class="fd-connection" aria-label="Direct FiveM connection">
+  <div class="fd-heading">Direct FiveM connection</div>
+  <sdpi-item>
+    <div class="fd-status" data-connection-status data-tone="neutral" role="status" aria-live="polite" aria-atomic="true">
+      <strong data-connection-title>Checking connection status…</strong>
+      <span data-connection-message>Reading FiveDeck's connection state.</span>
+      <span class="fd-status-detail" data-connection-instance>Primary client · 127.0.0.1:29200</span>
+    </div>
+    <small class="fd-note fd-transmission" data-connection-transmission>No command transmission reported in this inspector.</small>
+  </sdpi-item>
+  <sdpi-item>
+    <sdpi-button data-connection-test>Test connection</sdpi-button>
+  </sdpi-item>
+  <sdpi-item>
+    <small class="fd-note">Status shows the last result, not a live connection. The test sends no command. <b>Transmitted</b> means sent to FiveM, not confirmed as executed. Commands never fall back to typing into F8 or chat.</small>
+  </sdpi-item>
+  </section>
   <details class="fd-advanced">
-    <summary>Game connection (all FiveDeck keys)</summary>
-  <div class="fd-heading">Bridge</div>
-  <sdpi-item>
-    <div class="fd-status" data-bridge-status>Checking the bridge…</div>
-  </sdpi-item>
-  <sdpi-item>
-    <sdpi-button data-bridge-install>Add the bind to fivem.cfg now</sdpi-button>
-  </sdpi-item>
-  <sdpi-item label="Bridge key">
-    <sdpi-select setting="bridgeKey" default="F24" global>
-      <option value="F13">F13</option>
-      <option value="F14">F14</option>
-      <option value="F15">F15</option>
-      <option value="F16">F16</option>
-      <option value="F17">F17</option>
-      <option value="F18">F18</option>
-      <option value="F19">F19</option>
-      <option value="F20">F20</option>
-      <option value="F21">F21</option>
-      <option value="F22">F22</option>
-      <option value="F23">F23</option>
-      <option value="F24">F24</option>
+    <summary>Connection settings &amp; setup (all command keys)</summary>
+  <sdpi-item label="Client">
+    <sdpi-select setting="clientInstance" default="primary" global>
+      <option value="primary">Primary · 127.0.0.1:29200</option>
+      <option value="secondary">Legacy secondary (-cl2) · 127.0.0.1:29300</option>
     </sdpi-select>
   </sdpi-item>
-  <sdpi-item label="Setup">
-    <sdpi-checkbox setting="autoBridge" label="Install the bridge bind automatically" default="true" global></sdpi-checkbox>
+  <sdpi-item>
+    <small class="fd-note"><b>Legacy:</b> use the normal loopback Remote Console listener. The secondary client started with <code>-cl2</code> uses port 29300. <b>Enhanced:</b> open F8 → Console → Remote Console and enable it once; only the primary port 29200 is supported. Close F8, then test the connection. Enhanced compatibility still needs Windows in-game validation in this preview.</small>
   </sdpi-item>
   <sdpi-item>
-    <small class="fd-note">The bridge binds a key no keyboard has to <code>exec fxd:/fivedeck.cfg</code>. FiveDeck writes each press's commands into that file in <code>%APPDATA%\CitizenFX</code> and taps the key. Binds only run while you're in a server or story mode, not in menus or text boxes.</small>
+    <small class="fd-note">No FiveM resource or bridge bind is needed. Do not add <code>-devcon</code>: on Legacy it widens the listener beyond this PC. Version, command availability, and server permissions still apply.</small>
   </sdpi-item>
-  <div class="fd-heading">Input</div>
-  <sdpi-item label="Focus">
-    <sdpi-checkbox setting="focusGame" label="Bring FiveM to the front before sending" global></sdpi-checkbox>
-  </sdpi-item>
-  <sdpi-item label="Console key">
-    <sdpi-select setting="consoleKey" default="F8" global>
-      <option value="F8">F8</option>
-      <option value="GRAVE">` (grave)</option>
-      <option value="F1">F1</option>
-      <option value="F2">F2</option>
-    </sdpi-select>
-  </sdpi-item>
-  <sdpi-item label="Chat key">
-    <sdpi-select setting="chatKey" default="T" global>
-      <option value="T">T</option>
-      <option value="Y">Y</option>
-      <option value="U">U</option>
-      <option value="RETURN">Enter</option>
-    </sdpi-select>
-  </sdpi-item>
-  <sdpi-item label="Input delay">
-    <sdpi-range setting="inputDelayMs" min="30" max="600" step="10" default="90" global showlabels></sdpi-range>
-  </sdpi-item>
-  <sdpi-item label="Compatibility">
-    <sdpi-checkbox setting="scanCodeOnly" label="Send scan codes only" global></sdpi-checkbox>
-  </sdpi-item>
-  <div class="fd-heading">FiveM</div>
   <sdpi-item label="FiveM.exe">
     <sdpi-file setting="fivemPath" accept=".exe" global></sdpi-file>
   </sdpi-item>
   <sdpi-item>
-    <small class="fd-note">Leave empty to use the default install in <code>%LOCALAPPDATA%\FiveM</code>. FiveDeck only sends keys while a FiveM window is active.</small>
+    <small class="fd-note">Leave empty to use the default install in <code>%LOCALAPPDATA%\FiveM</code>.</small>
   </sdpi-item>
   </details>
   <script src="fivedeck.js"></script>
