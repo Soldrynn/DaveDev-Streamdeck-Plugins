@@ -32,8 +32,8 @@
     "pack": "streamdeck pack com.davedev.clef.sdPlugin --output dist --force --no-update-check"
   },
   "devDependencies": {
-    "@elgato/cli": "^1.7.4",
-    "@elgato/streamdeck": "^2.1.0",
+    "@elgato/cli": "^1.10.1",
+    "@elgato/streamdeck": "^3.0.1",
     "@types/node": "^26.6.4",
     "esbuild": "^0.28.2",
     "sharp": "^0.35.5",

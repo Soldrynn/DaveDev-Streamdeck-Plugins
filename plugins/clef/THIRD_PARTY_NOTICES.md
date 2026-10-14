@@ -4,9 +4,9 @@ The packaged plugin includes portions of the following third-party software. The
 
 ## Elgato SDK packages
 
-- `@elgato/streamdeck` 2.1.0
-- `@elgato/schemas` 0.4.15
-- `@elgato/utils` 0.4.5
+- `@elgato/streamdeck` 3.0.1
+- `@elgato/schemas` 0.5.1
+- `@elgato/utils` 0.6.0
 
 MIT License
 
